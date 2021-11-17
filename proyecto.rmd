@@ -19,3 +19,28 @@ has_disease <- subset(dataset, dataset$heart_disease == 1)
 dataset %>% group_by(gender) %>%  filter(heart_disease==1) %>% count(gender)
 setDT(dataset)[, .(pct = sum(gender == "Female")/.N), by=heart_disease]
 ```
+
+Regresión lineal
+```{r}
+lm_dataset <- subset(dataset, age > 18)
+
+lm_dataset$gender <- ifelse(lm_dataset$gender == "Female", 1, lm_dataset$gender)
+lm_dataset$gender <- ifelse(lm_dataset$gender == "Male", 2, lm_dataset$gender)
+lm_dataset$gender <- ifelse(lm_dataset$gender == "Other", 3, lm_dataset$gender)
+
+lm_dataset$bmi <- as.numeric(lm_dataset$bmi)
+lm_dataset$bmi <- ifelse(is.na(lm_dataset$bmi), round(mean(lm_dataset$bmi, na.rm = TRUE), 1), lm_dataset$bmi)
+
+
+split <- round(nrow(lm_dataset) * 0.80)
+dtrain <- lm_dataset[1: split, ]
+dtest <- lm_dataset[(split + 1):nrow(lm_dataset), ]
+
+lmObj <- lm(heart_disease ~ gender + age + hypertension + avg_glucose_level + bmi, data = dtrain)
+summary(lmObj)
+
+dtest$predict <- predict(lmObj, newdata = dtest)
+dtrain$predict <- predict(lmObj, newdata = dtrain)
+
+
+```
