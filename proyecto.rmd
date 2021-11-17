@@ -1,0 +1,21 @@
+## Proyecto Final - Ciencia de datos
+#### Aqui van las matriculas
+
+
+Librerias y dependencias
+```{r}
+install.packages("dplyr")
+install.packages("data.table")
+library(dplyr)
+library(data.table)
+```
+Carga y limpieza de datos
+```{r}
+setwd("/Users/alopezm/Documents/personal/escuela/proyecto-big-data")
+dataset <- read.csv("./dataset_illness.csv")
+
+has_disease <- subset(dataset, dataset$heart_disease == 1) 
+
+dataset %>% group_by(gender) %>%  filter(heart_disease==1) %>% count(gender)
+setDT(dataset)[, .(pct = sum(gender == "Female")/.N), by=heart_disease]
+```
